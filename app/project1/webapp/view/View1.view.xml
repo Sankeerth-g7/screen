@@ -17,10 +17,14 @@
                 <HBox class="filter-group">
                     <DatePicker id="startDatePicker" placeholder="Start Date" width="200px" change="onDateFilterChange" />
                     <DatePicker id="endDatePicker" placeholder="End Date" width="200px" change="onDateFilterChange" />
+                    <HBox class="clear-filters-button">
+                <Button text="Clear Filters" press="onClearFilters" width="150px"/>
+                </HBox>
                 </HBox > 
                 <HBox class="download-button">
                 <Button text="Download" press="onDownload" width="150px"/>
                 </HBox > 
+                
             </HBox>
 
             <!-- Table Box -->

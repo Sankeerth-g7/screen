@@ -56,9 +56,13 @@ sap.ui.define([
         onClearFilters: function () {
             this.byId("startDatePicker").setDateValue(null);
             this.byId("endDatePicker").setDateValue(null);
-            const oTable = this.byId("resignationTable");
-            const oBinding = oTable.getBinding("items");
-            oBinding.filter([]);
+            const oJSONModel = this.getView().getModel("view");
+            const aAllData = oJSONModel.getProperty("/resignation") || [];
+            oJSONModel.setProperty("/filteredResignation", aAllData);
+            var oTable = this.byId("resignationTable");
+            if (oTable && oTable.getBinding("items")) {
+                oTable.getBinding("items").refresh(true);
+            }
         },
  
  
