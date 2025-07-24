@@ -1,6 +1,8 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
-    "sap/ui/model/odata/v2/ODataModel"
+    "sap/ui/model/odata/v2/ODataModel",
+    "sap/ui/core/util/Export",
+    "sap/ui/core/util/ExportTypeCSV"
 ], function (Controller, ODataModel) {
     "use strict";
 
@@ -90,7 +92,45 @@ sap.ui.define([
         
 
         onDownload: function () {
-            // Add your download logic here
+            const oTable = this.byId("resignationTable");
+            const aItems = oTable.getItems();
+        
+            if (!aItems.length) {
+                sap.m.MessageToast.show("No data available in the table.");
+                return;
+            }
+        
+            // Define CSV headers
+            const aHeaders = [
+                "Job ID", "Date", "Resignation Entries", "Separation Postings", "Future Dated Entries",
+                "Upper Manager Updates", "Separation Start", "Separation End", "Separation Status",
+                "Upper Manager Start", "Upper Manager End", "Upper Manager Status"
+            ];
+        
+            // Extract row data
+            const aRows = aItems.map(oItem => {
+                const aCells = oItem.getCells();
+                return aCells.map(cell => cell.getText());
+            });
+        
+            // Build CSV content
+            let sCsvContent = aHeaders.join(",") + "\n";
+            aRows.forEach(row => {
+                sCsvContent += row.join(",") + "\n";
+            });
+        
+            // Trigger download
+            const blob = new Blob([sCsvContent], { type: "text/csv;charset=utf-8;" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "Resignation_Job_Details.csv";
+            link.style.visibility = "hidden";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
+         
+        
+        
     });
 });
