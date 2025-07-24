@@ -1,16 +1,12 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
-    "sap/ui/model/odata/v4/ODataModel"
+    "sap/ui/model/odata/v2/ODataModel"
 ], function (Controller, ODataModel) {
     "use strict";
 
     return Controller.extend("project1.controller.View1", {
         onInit: function () {
-            const oModel = new ODataModel({
-                serviceUrl: "/odata/v4/my/",
-                synchronizationMode: "None"
-            });
-
+            const oModel = new ODataModel("/odata/v2/my/");
             this.getView().setModel(oModel);
         },
         onDateFilterChange: function () {
@@ -44,5 +40,18 @@ sap.ui.define([
             oBinding.filter(aFilters);
         },
         
+
+        formatTime: function (sTime) {
+            if (!sTime) return "";
+            const match = sTime.match(/PT(\d{2})H(\d{2})M(\d{2})S/);
+            if (match) {
+                return `${match[1]}:${match[2]}:${match[3]}`;
+            }
+            return sTime;
+        },
+
+        onDownload: function () {
+            // Add your download logic here
+        }
     });
 });
