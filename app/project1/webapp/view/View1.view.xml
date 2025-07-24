@@ -1,46 +1,66 @@
 <mvc:View controllerName="project1.controller.View1"
     xmlns:mvc="sap.ui.core.mvc"
-    xmlns="sap.m">
-    <Page id="page" title="Resignation Job Details">
-        
-<DatePicker id="startDatePicker" placeholder="Start Date" width="150px" liveChange="onDateFilterChange" />
-<DatePicker id="endDatePicker" placeholder="End Date" width="150px" liveChange="onDateFilterChange" />
+    xmlns="sap.m"
+    xmlns:layout="sap.ui.layout"
+    xmlns:core="sap.ui.core">
 
-        <Button text="Download" press="onDownload" />
-        <Table id="resignationTable" items="{/resignation}">
-            <columns>
-                <Column><Text text="Job ID" /></Column>
-                <Column><Text text="Date" /></Column>
-                <Column><Text text="Resignation Entries" /></Column>
-                <Column><Text text="Separation Postings" /></Column>
-                <Column><Text text="Future Dated Entries" /></Column>
-                <Column><Text text="Upper Manager Updates" /></Column>
-                <Column><Text text="Separation Start" /></Column>
-                <Column><Text text="Separation End" /></Column>
-                <Column><Text text="Separation Status" /></Column>
-                <Column><Text text="Upper Manager Start" /></Column>
-                <Column><Text text="Upper Manager End" /></Column>
-                <Column><Text text="Upper Manager Status" /></Column>
-            </columns>
-            <items>
-                <ColumnListItem>
-  <cells>
-    <Text text="{Jobid}" />
-    <Text text="{path: 'Date', formatter: '.formatDate'}" />
-    <Text text="{resignationEntries}" />
-    <Text text="{seperationPostings}" />
-    <Text text="{futureDatedEntries}" />
-    <Text text="{upperManagerUpdates}" />
-    <Text text="{path: 'seperationJobStartTime', formatter: '.formatTime'}" />
-    <Text text="{path: 'seperationJobEndTime', formatter: '.formatTime'}" />
-    <Text text="{ueperationJobStatus}" />
-    <Text text="{path: 'upperManagerJobStartTime', formatter: '.formatTime'}" />
-    <Text text="{path: 'upperManagerJobEndTime', formatter: '.formatTime'}" />
-    <Text text="{upperManagerJobStatus}" />
-  </cells>
-</ColumnListItem>
+    <Page id="page" showHeader="false" class="sapMPage">
+        <layout:VerticalLayout class="sapUiSmallMargin">
 
-            </items>
-        </Table>
+            <!-- Centered Page Title -->
+            <HBox justifyContent="Center">
+                <Title text="Resignation Job Details" level="H1" class="page-title" />
+            </HBox>
+
+            <!-- Filter Bar -->
+            <HBox class="filter-bar">
+                <HBox class="filter-group">
+                    <DatePicker id="startDatePicker" placeholder="Start Date" width="200px" liveChange="onDateFilterChange" />
+                    <DatePicker id="endDatePicker" placeholder="End Date" width="200px" liveChange="onDateFilterChange" />
+                </HBox > 
+                <HBox class="download-button">
+                <Button text="Download" press="onDownload" width="150px"/>
+                </HBox > 
+            </HBox>
+
+            <!-- Table Box -->
+            <VBox class="table-box">
+                <Table id="resignationTable" items="{/resignation}" inset="false" growing="true" growingScrollToLoad="true">
+                    <columns>
+                        <Column><Text text="Job ID" class="column-header" /></Column>
+                        <Column><Text text="Date" class="column-header" /></Column>
+                        <Column><Text text="Resignation Entries" class="column-header" /></Column>
+                        <Column><Text text="Separation Postings" class="column-header" /></Column>
+                        <Column><Text text="Future Dated Entries" class="column-header" /></Column>
+                        <Column><Text text="Upper Manager Updates" class="column-header" /></Column>
+                        <Column><Text text="Separation Start" class="column-header" /></Column>
+                        <Column><Text text="Separation End" class="column-header" /></Column>
+                        <Column><Text text="Separation Status" class="column-header" /></Column>
+                        <Column><Text text="Upper Manager Start" class="column-header" /></Column>
+                        <Column><Text text="Upper Manager End" class="column-header" /></Column>
+                        <Column><Text text="Upper Manager Status" class="column-header" /></Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem>
+                            <cells>
+                                <Text text="{Jobid}" class="column-cell" />
+                                <Text text="{path: 'Date', formatter: '.formatDate'}" class="column-cell" />
+                                <Text text="{resignationEntries}" class="column-cell" />
+                                <Text text="{seperationPostings}" class="column-cell" />
+                                <Text text="{futureDatedEntries}" class="column-cell" />
+                                <Text text="{upperManagerUpdates}" class="column-cell" />
+                                <Text text="{path: 'seperationJobStartTime', formatter: '.formatTime'}" class="column-cell"  />
+                                <Text text="{path: 'seperationJobEndTime', formatter: '.formatTime'}" class="column-cell"  />
+                                <ObjectStatus text="{ueperationJobStatus}" state="{path: 'ueperationJobStatus', formatter: '.formatStatusColor'}" />
+                                  <Text text="{path: 'upperManagerJobStartTime', formatter: '.formatTime'}" class="column-cell" />
+                                  <Text text="{path: 'upperManagerJobEndTime', formatter: '.formatTime'}" class="column-cell"/>
+                                <ObjectStatus text="{upperManagerJobStatus}" state="{path: 'upperManagerJobStatus', formatter: '.formatStatusColor'}" />
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </VBox>
+
+        </layout:VerticalLayout>
     </Page>
 </mvc:View>

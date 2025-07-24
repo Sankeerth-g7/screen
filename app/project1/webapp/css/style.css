@@ -1,1 +1,81 @@
-/* Enter your custom styles here */
+/* Page background */
+.sapMPage {
+    background: linear-gradient(90deg, rgba(42, 123, 155, 1) 0%, rgba(209, 224, 215, 1) 63%, rgba(237, 221, 83, 1) 100%);
+    padding: 1rem;
+}
+
+/* Centered and large title */
+.page-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: black;
+    margin-bottom: 1rem;
+}
+
+/* Filter bar layout */
+.filter-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.filter-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Table container */
+.table-box {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Column header styling */
+.column-header {
+    font-weight: bold;
+    
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+.column-cell {
+    font-size: 0.9rem;
+    padding: 0.5rem;
+    color: #2A7B9B;
+   
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .filter-bar {
+        flex-direction: column;
+        
+        align-items: flex-start;
+    }
+
+    .filter-group {
+        width: 100%;
+        font-weight: 600;
+        justify-content: space-between;
+    }
+
+    .filter-bar .sapMBtn {
+        align-self: flex-end;
+        margin-top: 0.5rem;
+    }
+}
+
+.download-button {
+    font-size: 1rem;
+    height: 2.5rem;
+    padding: 0.5rem 1.5rem;
+    margin-left: -3rem; /* Moves button slightly left */
+}
+

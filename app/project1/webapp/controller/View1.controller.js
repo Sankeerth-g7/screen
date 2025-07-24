@@ -2,8 +2,10 @@ sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/ui/model/odata/v2/ODataModel",
     "sap/ui/core/util/Export",
-    "sap/ui/core/util/ExportTypeCSV"
-], function (Controller, ODataModel) {
+    "sap/ui/core/util/ExportTypeCSV",
+    "sap/ui/model/Filter",
+    "sap/ui/model/FilterOperator"
+], function (Controller, ODataModel, Filter, FilterOperator) {
     "use strict";
 
     return Controller.extend("project1.controller.View1", {
@@ -11,41 +13,46 @@ sap.ui.define([
             const oModel = new ODataModel("/odata/v2/my/");
             this.getView().setModel(oModel);
         },
+
         onDateFilterChange: function () {
-            var oTable = this.byId("resignationTable");
-            var oBinding = oTable.getBinding("items");
-        
-            var oStartDate = this.byId("startDatePicker").getDateValue();
-            var oEndDate = this.byId("endDatePicker").getDateValue();
-        
-            var aFilters = [];
-        
-            var formatDate = function (date) {
+            const oTable = this.byId("resignationTable");
+            const oBinding = oTable.getBinding("items");
+
+            const oStartDate = this.byId("startDatePicker").getDateValue();
+            const oEndDate = this.byId("endDatePicker").getDateValue();
+
+            const aFilters = [];
+
+            const formatDate = function (date) {
                 if (!date) return null;
-                var yyyy = date.getFullYear();
-                var mm = String(date.getMonth() + 1).padStart(2, '0');
-                var dd = String(date.getDate()).padStart(2, '0');
+                const yyyy = date.getFullYear();
+                const mm = String(date.getMonth() + 1).padStart(2, '0');
+                const dd = String(date.getDate()).padStart(2, '0');
                 return `${yyyy}-${mm}-${dd}`;
             };
-        
-            var sStartDate = formatDate(oStartDate);
-            var sEndDate = formatDate(oEndDate);
-        
-            if (sStartDate) {
-                aFilters.push(new sap.ui.model.Filter("Date", sap.ui.model.FilterOperator.GE, sStartDate));
+
+            const sStartDate = formatDate(oStartDate);
+            const sEndDate = formatDate(oEndDate);
+
+            if (sStartDate && sEndDate && sStartDate === sEndDate) {
+                // Exact match filter
+                aFilters.push(new Filter("Date", FilterOperator.EQ, sStartDate));
+            } else {
+                // Range filter
+                if (sStartDate) {
+                    aFilters.push(new Filter("Date", FilterOperator.GE, sStartDate));
+                }
+                if (sEndDate) {
+                    aFilters.push(new Filter("Date", FilterOperator.LE, sEndDate));
+                }
             }
-        
-            if (sEndDate) {
-                aFilters.push(new sap.ui.model.Filter("Date", sap.ui.model.FilterOperator.LE, sEndDate));
-            }
-        
+
             oBinding.filter(aFilters);
         },
-        
 
         formatTime: function (oTime) {
             if (!oTime) return "";
-        
+       
             // If it's an object with .ms property (OData V2 duration), convert to time string
             if (typeof oTime === "object" && oTime.ms !== undefined) {
                 const totalSeconds = oTime.ms / 1000;
@@ -54,7 +61,7 @@ sap.ui.define([
                 const seconds = String(Math.floor(totalSeconds % 60)).padStart(2, '0');
                 return `${hours}:${minutes}:${seconds}`;
             }
-        
+       
             // If it's a string like "PT09H00M00S"
             if (typeof oTime === "string") {
                 const match = oTime.match(/PT(\d{2})H(\d{2})M(\d{2})S/);
@@ -62,10 +69,18 @@ sap.ui.define([
                     return `${match[1]}:${match[2]}:${match[3]}`;
                 }
             }
-        
+       
             return String(oTime);
         },
 
+        formatStatusColor: function (sStatus) {
+            if (sStatus === "Completed") {
+                return "Success"; // green
+            } else if (sStatus === "Skipped") {
+                return "Error"; // red
+            }
+            return "None";
+        },
         formatDate: function (oDate) {
             if (!oDate) return "";
         
@@ -134,3 +149,4 @@ sap.ui.define([
         
     });
 });
+
