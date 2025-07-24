@@ -1,0 +1,11 @@
+Jobid,Date,resignationEntries,seperationPostings,futureDatedEntries,upperManagerUpdates,seperationJobStartTime,seperationJobEndTime,ueperationJobStatus,upperManagerJobStartTime,upperManagerJobEndTime,upperManagerJobStatus
+J001,2025-07-01,2,1,0,1,09:00,09:15,Completed,09:20,09:35,Completed
+J002,2025-07-02,1,0,1,0,10:00,10:20,Completed,10:25,10:45,Skipped
+J003,2025-07-03,3,2,0,2,08:30,08:50,Completed,09:00,09:30,Completed
+J004,2025-07-04,0,1,1,1,11:00,11:10,Completed,11:15,11:40,Completed
+J005,2025-07-05,2,0,0,0,13:00,13:25,Completed,13:30,13:50,Skipped
+J006,2025-07-06,1,1,1,1,14:00,14:15,Completed,14:20,14:45,Completed
+J007,2025-07-07,0,0,2,1,15:00,15:10,Completed,15:15,15:35,Completed
+J008,2025-07-08,4,3,0,2,16:00,16:30,Completed,16:35,17:00,Completed
+J009,2025-07-09,1,1,1,0,17:00,17:20,Completed,17:25,17:45,Skipped
+J010,2025-07-10,2,2,1,1,18:00,18:30,Completed,18:35,19:00,Completed
