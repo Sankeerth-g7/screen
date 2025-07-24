@@ -1,6 +1,40 @@
 <mvc:View controllerName="project1.controller.View1"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m">
-    <Page id="page" title="{i18n>title}">
+    <Page id="page" title="Resignation Job Details">
+        <Table id="resignationTable" items="{/resignation}">
+            <columns>
+                <Column><Text text="Job ID" /></Column>
+                <Column><Text text="Date" /></Column>
+                <Column><Text text="Resignation Entries" /></Column>
+                <Column><Text text="Separation Postings" /></Column>
+                <Column><Text text="Future Dated Entries" /></Column>
+                <Column><Text text="Upper Manager Updates" /></Column>
+                <Column><Text text="Separation Start" /></Column>
+                <Column><Text text="Separation End" /></Column>
+                <Column><Text text="Separation Status" /></Column>
+                <Column><Text text="Upper Manager Start" /></Column>
+                <Column><Text text="Upper Manager End" /></Column>
+                <Column><Text text="Upper Manager Status" /></Column>
+            </columns>
+            <items>
+                <ColumnListItem>
+                    <cells>
+                        <Text text="{Jobid}" />
+                        <Text text="{Date}" />
+                        <Text text="{resignationEntries}" />
+                        <Text text="{seperationPostings}" />
+                        <Text text="{futureDatedEntries}" />
+                        <Text text="{upperManagerUpdates}" />
+                        <Text text="{seperationJobStartTime}" />
+                        <Text text="{seperationJobEndTime}" />
+                        <Text text="{ueperationJobStatus}" />
+                        <Text text="{upperManagerJobStartTime}" />
+                        <Text text="{upperManagerJobEndTime}" />
+                        <Text text="{upperManagerJobStatus}" />
+                    </cells>
+                </ColumnListItem>
+            </items>
+        </Table>
     </Page>
 </mvc:View>
