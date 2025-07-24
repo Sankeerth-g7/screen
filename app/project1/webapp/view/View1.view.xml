@@ -24,21 +24,22 @@
             </columns>
             <items>
                 <ColumnListItem>
-                    <cells>
-                        <Text text="{Jobid}" />
-                        <Text text="{Date path: 'Date', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium' }}" />
-                        <Text text="{resignationEntries}" />
-                        <Text text="{seperationPostings}" />
-                        <Text text="{futureDatedEntries}" />
-                        <Text text="{upperManagerUpdates}" />
-                        <Text text="{seperationJobStartTime path: 'seperationJobStartTime', formatter: '.formatTime'}" />
-                        <Text text="{seperationJobEndTime path: 'seperationJobEndTime', formatter: '.formatTime'}" />
-                        <Text text="{ueperationJobStatus}" />
-                        <Text text="{upperManagerJobStartTime path: 'upperManagerJobStartTime', formatter: '.formatTime'}" />
-                        <Text text="{upperManagerJobEndTime path: 'upperManagerJobEndTime', formatter: '.formatTime'}" />
-                        <Text text="{upperManagerJobStatus}" />
-                    </cells>
-                </ColumnListItem>
+  <cells>
+    <Text text="{Jobid}" />
+    <Text text="{path: 'Date', formatter: '.formatDate'}" />
+    <Text text="{resignationEntries}" />
+    <Text text="{seperationPostings}" />
+    <Text text="{futureDatedEntries}" />
+    <Text text="{upperManagerUpdates}" />
+    <Text text="{path: 'seperationJobStartTime', formatter: '.formatTime'}" />
+    <Text text="{path: 'seperationJobEndTime', formatter: '.formatTime'}" />
+    <Text text="{ueperationJobStatus}" />
+    <Text text="{path: 'upperManagerJobStartTime', formatter: '.formatTime'}" />
+    <Text text="{path: 'upperManagerJobEndTime', formatter: '.formatTime'}" />
+    <Text text="{upperManagerJobStatus}" />
+  </cells>
+</ColumnListItem>
+
             </items>
         </Table>
     </Page>
