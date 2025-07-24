@@ -26,9 +26,13 @@ sap.ui.define([
             });
         },
 
-       onDateFilterChange: function () {
+        onDateFilterChange: function () {
             const startDate = this.byId("startDatePicker").getDateValue();
-            const endDate = this.byId("endDatePicker").getDateValue();
+            let endDate = this.byId("endDatePicker").getDateValue();
+            if (endDate) {
+                endDate.setHours(23, 59, 59, 999);
+            }
+        
             const oJSONModel = this.getView().getModel("view");
             const aAllData = oJSONModel.getProperty("/resignation") || [];
             const aFilteredData = aAllData.filter(item => {
@@ -43,9 +47,10 @@ sap.ui.define([
                 }
                 if (!itemDate || isNaN(itemDate)) return false;
                 if (startDate && itemDate < startDate) return false;
-                if (endDate && itemDate > endDate) return false; // <= includes end date
+                if (endDate && itemDate > endDate) return false;
                 return true;
             });
+        
             oJSONModel.setProperty("/filteredResignation", aFilteredData);
             var oTable = this.byId("resignationTable");
             if (oTable && oTable.getBinding("items")) {
