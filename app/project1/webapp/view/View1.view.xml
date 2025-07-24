@@ -2,16 +2,10 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m">
     <Page id="page" title="Resignation Job Details">
-    <Table id="resignationTable" items="{/resignation}">
-        <headerToolbar>
-        <Toolbar>
         
 <DatePicker id="startDatePicker" placeholder="Start Date" width="150px" liveChange="onDateFilterChange" />
 <DatePicker id="endDatePicker" placeholder="End Date" width="150px" liveChange="onDateFilterChange" />
 
-        </Toolbar>
-        </headerToolbar>
-          
         <Button text="Download" press="onDownload" />
         <Table id="resignationTable" items="{/resignation}">
             <columns>
