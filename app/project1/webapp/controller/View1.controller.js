@@ -1,20 +1,64 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/ui/model/odata/v2/ODataModel",
-    "sap/ui/core/util/Export",
-    "sap/ui/core/util/ExportTypeCSV",
+    "sap/ui/model/Filter",
+    "sap/ui/model/FilterOperator",
+    "sap/m/MessageToast",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator"
-], function (Controller, ODataModel, Filter, FilterOperator) {
+], function (Controller, ODataModel, Filter, FilterOperator, Filter, FilterOperator, MessageToast) {
     "use strict";
 
     return Controller.extend("project1.controller.View1", {
         onInit: function () {
-            const oModel = new ODataModel("/odata/v2/my/");
-            this.getView().setModel(oModel);
+            const oODataModel = new ODataModel("/odata/v2/my/");
+            this.getView().setModel(oODataModel, "odata");
+            const oJSONModel = new sap.ui.model.json.JSONModel({ resignation: [], filteredResignation: [] });
+            this.getView().setModel(oJSONModel, "view");
+            oODataModel.read("/resignation", {
+                success: (oData) => {
+                    console.log("OData /resignation results:", oData.results);
+                    oJSONModel.setProperty("/resignation", oData.results);
+                    oJSONModel.setProperty("/filteredResignation", oData.results);
+                    console.log("JSONModel /resignation:", oJSONModel.getProperty("/resignation"));
+                },
+                error: (err) => {
+                    console.error("Failed to load resignation data", err);
+                }
+            });
         },
 
         onDateFilterChange: function () {
+            const startDate = this.byId("startDatePicker").getDateValue();
+            const endDate = this.byId("endDatePicker").getDateValue();
+            const oJSONModel = this.getView().getModel("view");
+            const aAllData = oJSONModel.getProperty("/resignation") || [];
+            // Defensive: handle missing or invalid date
+            const aFilteredData = aAllData.filter(item => {
+                let itemDate;
+                if (item.Date) {
+                    // Try to parse as ISO or OData date string
+                    if (typeof item.Date === "string" && item.Date.includes("/Date(")) {
+                        const timestamp = parseInt(item.Date.match(/\d+/)[0], 10);
+                        itemDate = new Date(timestamp);
+                    } else {
+                        itemDate = new Date(item.Date);
+                    }
+                }
+                if (!itemDate || isNaN(itemDate)) return false;
+                // Include end date in results
+                return (!startDate || itemDate >= startDate) &&
+                       (!endDate || itemDate <= endDate || itemDate.toDateString() === endDate.toDateString());
+            });
+            oJSONModel.setProperty("/filteredResignation", aFilteredData);
+        },
+
+        onClearFilters: function () {
+            this.byId("startDatePicker").setDateValue(null);
+            this.byId("endDatePicker").setDateValue(null);
+            const oTable = this.byId("resignationTable");
+            const oBinding = oTable.getBinding("items");
+            oBinding.filter([]);
             const oTable = this.byId("resignationTable");
             const oBinding = oTable.getBinding("items");
 
@@ -52,8 +96,6 @@ sap.ui.define([
 
         formatTime: function (oTime) {
             if (!oTime) return "";
-       
-            // If it's an object with .ms property (OData V2 duration), convert to time string
             if (typeof oTime === "object" && oTime.ms !== undefined) {
                 const totalSeconds = oTime.ms / 1000;
                 const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
@@ -61,7 +103,7 @@ sap.ui.define([
                 const seconds = String(Math.floor(totalSeconds % 60)).padStart(2, '0');
                 return `${hours}:${minutes}:${seconds}`;
             }
-       
+        
             // If it's a string like "PT09H00M00S"
             if (typeof oTime === "string") {
                 const match = oTime.match(/PT(\d{2})H(\d{2})M(\d{2})S/);
@@ -69,7 +111,7 @@ sap.ui.define([
                     return `${match[1]}:${match[2]}:${match[3]}`;
                 }
             }
-       
+        
             return String(oTime);
         },
 
@@ -83,58 +125,48 @@ sap.ui.define([
         },
         formatDate: function (oDate) {
             if (!oDate) return "";
-        
-            // If it's an object with .ms (milliseconds), convert to Date
             let dateObj;
             if (typeof oDate === "object" && oDate.ms !== undefined) {
                 dateObj = new Date(oDate.ms);
             } else if (typeof oDate === "string" && oDate.includes("/Date(")) {
-                const timestamp = parseInt(oDate.match(/\\d+/)[0], 10);
+                const timestamp = parseInt(oDate.match(/\d+/)[0], 10);
                 dateObj = new Date(timestamp);
             } else {
                 dateObj = new Date(oDate);
             }
-        
             const day = String(dateObj.getDate()).padStart(2, '0');
             const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                                 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             const month = monthNames[dateObj.getMonth()];
             const year = String(dateObj.getFullYear()).slice(-2);
-        
             return `${day}-${month}-${year}`;
-        },        
-        
-        
+        },
 
         onDownload: function () {
             const oTable = this.byId("resignationTable");
             const aItems = oTable.getItems();
-        
+
             if (!aItems.length) {
-                sap.m.MessageToast.show("No data available in the table.");
+                MessageToast.show("No data available in the table.");
                 return;
             }
-        
-            // Define CSV headers
+
             const aHeaders = [
                 "Job ID", "Date", "Resignation Entries", "Separation Postings", "Future Dated Entries",
                 "Upper Manager Updates", "Separation Start", "Separation End", "Separation Status",
                 "Upper Manager Start", "Upper Manager End", "Upper Manager Status"
             ];
-        
-            // Extract row data
+
             const aRows = aItems.map(oItem => {
                 const aCells = oItem.getCells();
                 return aCells.map(cell => cell.getText());
             });
-        
-            // Build CSV content
+
             let sCsvContent = aHeaders.join(",") + "\n";
             aRows.forEach(row => {
                 sCsvContent += row.join(",") + "\n";
             });
-        
-            // Trigger download
+
             const blob = new Blob([sCsvContent], { type: "text/csv;charset=utf-8;" });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
@@ -144,9 +176,6 @@ sap.ui.define([
             link.click();
             document.body.removeChild(link);
         }
-         
-        
-        
     });
 });
 
