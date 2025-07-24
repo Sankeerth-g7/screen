@@ -6,7 +6,7 @@ sap.ui.define([
     "sap/m/MessageToast",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator"
-], function (Controller, ODataModel, Filter, FilterOperator, Filter, FilterOperator, MessageToast) {
+], function (Controller, ODataModel,Filter, FilterOperator, MessageToast) {
     "use strict";
 
     return Controller.extend("project1.controller.View1", {
@@ -14,13 +14,11 @@ sap.ui.define([
             const oODataModel = new ODataModel("/odata/v2/my/");
             this.getView().setModel(oODataModel, "odata");
             const oJSONModel = new sap.ui.model.json.JSONModel({ resignation: [], filteredResignation: [] });
-            this.getView().setModel(oJSONModel, "view");
+            this.getView().setModel(oJSONModel, "view"); // Set as named model 'view'
             oODataModel.read("/resignation", {
                 success: (oData) => {
-                    console.log("OData /resignation results:", oData.results);
                     oJSONModel.setProperty("/resignation", oData.results);
                     oJSONModel.setProperty("/filteredResignation", oData.results);
-                    console.log("JSONModel /resignation:", oJSONModel.getProperty("/resignation"));
                 },
                 error: (err) => {
                     console.error("Failed to load resignation data", err);
@@ -28,16 +26,14 @@ sap.ui.define([
             });
         },
 
-        onDateFilterChange: function () {
+       onDateFilterChange: function () {
             const startDate = this.byId("startDatePicker").getDateValue();
             const endDate = this.byId("endDatePicker").getDateValue();
             const oJSONModel = this.getView().getModel("view");
             const aAllData = oJSONModel.getProperty("/resignation") || [];
-            // Defensive: handle missing or invalid date
             const aFilteredData = aAllData.filter(item => {
                 let itemDate;
                 if (item.Date) {
-                    // Try to parse as ISO or OData date string
                     if (typeof item.Date === "string" && item.Date.includes("/Date(")) {
                         const timestamp = parseInt(item.Date.match(/\d+/)[0], 10);
                         itemDate = new Date(timestamp);
@@ -46,54 +42,26 @@ sap.ui.define([
                     }
                 }
                 if (!itemDate || isNaN(itemDate)) return false;
-                // Include end date in results
-                return (!startDate || itemDate >= startDate) &&
-                       (!endDate || itemDate <= endDate || itemDate.toDateString() === endDate.toDateString());
+                if (startDate && itemDate < startDate) return false;
+                if (endDate && itemDate > endDate) return false; // <= includes end date
+                return true;
             });
             oJSONModel.setProperty("/filteredResignation", aFilteredData);
+            var oTable = this.byId("resignationTable");
+            if (oTable && oTable.getBinding("items")) {
+                oTable.getBinding("items").refresh(true);
+            }
         },
-
+ 
         onClearFilters: function () {
             this.byId("startDatePicker").setDateValue(null);
             this.byId("endDatePicker").setDateValue(null);
             const oTable = this.byId("resignationTable");
             const oBinding = oTable.getBinding("items");
             oBinding.filter([]);
-            const oTable = this.byId("resignationTable");
-            const oBinding = oTable.getBinding("items");
-
-            const oStartDate = this.byId("startDatePicker").getDateValue();
-            const oEndDate = this.byId("endDatePicker").getDateValue();
-
-            const aFilters = [];
-
-            const formatDate = function (date) {
-                if (!date) return null;
-                const yyyy = date.getFullYear();
-                const mm = String(date.getMonth() + 1).padStart(2, '0');
-                const dd = String(date.getDate()).padStart(2, '0');
-                return `${yyyy}-${mm}-${dd}`;
-            };
-
-            const sStartDate = formatDate(oStartDate);
-            const sEndDate = formatDate(oEndDate);
-
-            if (sStartDate && sEndDate && sStartDate === sEndDate) {
-                // Exact match filter
-                aFilters.push(new Filter("Date", FilterOperator.EQ, sStartDate));
-            } else {
-                // Range filter
-                if (sStartDate) {
-                    aFilters.push(new Filter("Date", FilterOperator.GE, sStartDate));
-                }
-                if (sEndDate) {
-                    aFilters.push(new Filter("Date", FilterOperator.LE, sEndDate));
-                }
-            }
-
-            oBinding.filter(aFilters);
         },
-
+ 
+ 
         formatTime: function (oTime) {
             if (!oTime) return "";
             if (typeof oTime === "object" && oTime.ms !== undefined) {

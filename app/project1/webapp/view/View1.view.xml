@@ -15,8 +15,8 @@
             <!-- Filter Bar -->
             <HBox class="filter-bar">
                 <HBox class="filter-group">
-                    <DatePicker id="startDatePicker" placeholder="Start Date" width="200px" liveChange="onDateFilterChange" />
-                    <DatePicker id="endDatePicker" placeholder="End Date" width="200px" liveChange="onDateFilterChange" />
+                    <DatePicker id="startDatePicker" placeholder="Start Date" width="200px" change="onDateFilterChange" />
+                    <DatePicker id="endDatePicker" placeholder="End Date" width="200px" change="onDateFilterChange" />
                 </HBox > 
                 <HBox class="download-button">
                 <Button text="Download" press="onDownload" width="150px"/>
@@ -25,7 +25,7 @@
 
             <!-- Table Box -->
             <VBox class="table-box">
-                <Table id="resignationTable" items="{/resignation}" inset="false" growing="true" growingScrollToLoad="true">
+                <Table id="resignationTable" items="{view>/filteredResignation}" inset="false" growing="true" growingScrollToLoad="true">
                     <columns>
                         <Column><Text text="Job ID" class="column-header" /></Column>
                         <Column><Text text="Date" class="column-header" /></Column>
@@ -43,18 +43,18 @@
                     <items>
                         <ColumnListItem>
                             <cells>
-                                <Text text="{Jobid}" class="column-cell" />
-                                <Text text="{path: 'Date', formatter: '.formatDate'}" class="column-cell" />
-                                <Text text="{resignationEntries}" class="column-cell" />
-                                <Text text="{seperationPostings}" class="column-cell" />
-                                <Text text="{futureDatedEntries}" class="column-cell" />
-                                <Text text="{upperManagerUpdates}" class="column-cell" />
-                                <Text text="{path: 'seperationJobStartTime', formatter: '.formatTime'}" class="column-cell"  />
-                                <Text text="{path: 'seperationJobEndTime', formatter: '.formatTime'}" class="column-cell"  />
-                                <ObjectStatus text="{ueperationJobStatus}" state="{path: 'ueperationJobStatus', formatter: '.formatStatusColor'}" />
-                                  <Text text="{path: 'upperManagerJobStartTime', formatter: '.formatTime'}" class="column-cell" />
-                                  <Text text="{path: 'upperManagerJobEndTime', formatter: '.formatTime'}" class="column-cell"/>
-                                <ObjectStatus text="{upperManagerJobStatus}" state="{path: 'upperManagerJobStatus', formatter: '.formatStatusColor'}" />
+                                <Text text="{view>Jobid}" class="column-cell" />
+                                <Text text="{path: 'view>Date', formatter: '.formatDate'}" class="column-cell" />
+                                <Text text="{view>resignationEntries}" class="column-cell" />
+                                <Text text="{view>seperationPostings}" class="column-cell" />
+                                <Text text="{view>futureDatedEntries}" class="column-cell" />
+                                <Text text="{view>upperManagerUpdates}" class="column-cell" />
+                                <Text text="{path: 'view>seperationJobStartTime', formatter: '.formatTime'}" class="column-cell"  />
+                                <Text text="{path: 'view>seperationJobEndTime', formatter: '.formatTime'}" class="column-cell"  />
+                                <Text text="{view>ueperationJobStatus}" class="column-cell" />
+                                  <Text text="{path: 'view>upperManagerJobStartTime', formatter: '.formatTime'}" class="column-cell" />
+                                  <Text text="{path: 'view>upperManagerJobEndTime', formatter: '.formatTime'}" class="column-cell"/>
+                                <Text text="{view>upperManagerJobStatus}" class="column-cell" />
                             </cells>
                         </ColumnListItem>
                     </items>
