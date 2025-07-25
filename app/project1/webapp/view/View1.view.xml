@@ -7,12 +7,12 @@
     <Page id="page" showHeader="false" class="sapMPage">
         <layout:VerticalLayout class="sapUiSmallMargin">
 
-            <!-- Centered Page Title -->
+            
             <HBox justifyContent="Center">
                 <Title text="Resignation Job Details" level="H1" class="page-title" />
             </HBox>
 
-            <!-- Filter Bar -->
+            
             <HBox class="filter-bar">
                 <HBox class="filter-group">
                     <DatePicker id="startDatePicker" placeholder="Start Date" width="200px" change="onDateFilterChange" />
@@ -27,7 +27,7 @@
                 
             </HBox>
 
-            <!-- Table Box -->
+            
             <VBox class="table-box">
                 <Table id="resignationTable" items="{view>/filteredResignation}" inset="false" growing="true" growingScrollToLoad="true">
                     <columns>
@@ -55,10 +55,10 @@
                                 <Text text="{view>upperManagerUpdates}" class="column-cell" />
                                 <Text text="{path: 'view>seperationJobStartTime', formatter: '.formatTime'}" class="column-cell"  />
                                 <Text text="{path: 'view>seperationJobEndTime', formatter: '.formatTime'}" class="column-cell"  />
-                                <Text text="{view>ueperationJobStatus}" class="column-cell" />
+                                <ObjectStatus text="{view>ueperationJobStatus}" state="{path: 'view>ueperationJobStatus', formatter: '.formatStatusColor'}" class="column-cell" />
                                   <Text text="{path: 'view>upperManagerJobStartTime', formatter: '.formatTime'}" class="column-cell" />
                                   <Text text="{path: 'view>upperManagerJobEndTime', formatter: '.formatTime'}" class="column-cell"/>
-                                <Text text="{view>upperManagerJobStatus}" class="column-cell" />
+                                  <ObjectStatus text="{view>upperManagerJobStatus}" state="{path: 'view>upperManagerJobStatus', formatter: '.formatStatusColor'}" class="column-cell" />
                             </cells>
                         </ColumnListItem>
                     </items>
