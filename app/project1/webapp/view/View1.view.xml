@@ -37,11 +37,11 @@
                         <Column><Text text="Separation Postings" class="column-header" /></Column>
                         <Column><Text text="Future Dated Entries" class="column-header" /></Column>
                         <Column><Text text="Upper Manager Updates" class="column-header" /></Column>
-                        <Column><Text text="Separation Start" class="column-header" /></Column>
-                        <Column><Text text="Separation End" class="column-header" /></Column>
+                        <Column><Text text="Separation Start Time" class="column-header" /></Column>
+                        <Column><Text text="Separation End Time" class="column-header" /></Column>
                         <Column><Text text="Separation Status" class="column-header" /></Column>
-                        <Column><Text text="Upper Manager Start" class="column-header" /></Column>
-                        <Column><Text text="Upper Manager End" class="column-header" /></Column>
+                        <Column><Text text="Upper Manager Start Time" class="column-header" /></Column>
+                        <Column><Text text="Upper Manager End Time" class="column-header" /></Column>
                         <Column><Text text="Upper Manager Status" class="column-header" /></Column>
                     </columns>
                     <items>
@@ -64,11 +64,14 @@
                     </items>
                 </Table>
             </VBox>
-            <HBox justifyContent="Center" class="pagination-bar">
-    <Button text="Previous" press="onPreviousPage" />
-    <Text text="{view>/currentPage}" />
+            <HBox justifyContent="Center" class="pagination-bar" alignItems="Center">
+    <Button text="Previous" press="onPreviousPage" enabled="{= ${view>/currentPage} > 1 }" />
+    
+    <HBox id="pageNumbersBox" class="page-numbers-box" />
+    
     <Button text="Next" press="onNextPage" />
 </HBox>
+
 
 
         </layout:VerticalLayout>

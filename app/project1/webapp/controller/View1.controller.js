@@ -45,7 +45,16 @@ sap.ui.define([
             const pageData = allData.slice(start, end);
 
             oModel.setProperty("/paginatedResignation", pageData);
+            this.renderPageNumbers();
+
         },
+
+        onPageSelect: function (iPage) {
+            const oModel = this.getView().getModel("view");
+            oModel.setProperty("/currentPage", iPage);
+            this.updatePagination();
+        },
+        
 
         onNextPage: function () {
             const oModel = this.getView().getModel("view");
@@ -59,6 +68,7 @@ sap.ui.define([
             }
         },
 
+
         onPreviousPage: function () {
             const oModel = this.getView().getModel("view");
             let currentPage = oModel.getProperty("/currentPage");
@@ -68,6 +78,34 @@ sap.ui.define([
                 this.updatePagination();
             }
         },
+
+        renderPageNumbers: function () {
+            const oModel = this.getView().getModel("view");
+            const currentPage = oModel.getProperty("/currentPage");
+            const pageSize = oModel.getProperty("/pageSize");
+            const totalItems = oModel.getProperty("/filteredResignation").length;
+            const totalPages = Math.ceil(totalItems / pageSize);
+        
+            const oPageBox = this.byId("pageNumbersBox");
+            oPageBox.removeAllItems();
+        
+            const start = Math.max(1, currentPage - 2);
+            const end = Math.min(totalPages, currentPage + 2);
+        
+            for (let i = start; i <= end; i++) {
+                const oButton = new sap.m.Button({
+                    text: i.toString(),
+                    press: this.onPageSelect.bind(this, i)
+                });
+        
+                if (i === currentPage) {
+                    oButton.addStyleClass("current-page");
+                }
+        
+                oPageBox.addItem(oButton);
+            }
+        },
+        
 
         onDateFilterChange: function () {
             const startDate = this.byId("startDatePicker").getDateValue();

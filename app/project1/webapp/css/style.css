@@ -79,3 +79,12 @@
     margin-left: -3rem; /* Moves button slightly left */
 }
 
+.page-numbers-box .sapMBtnInner {
+    margin: 0 4px;
+}
+
+.page-numbers-box .current-page .sapMBtnInner {
+    background-color: #0070f2;
+    color: white;
+    font-weight: bold;
+}
