@@ -149,23 +149,34 @@ sap.ui.define([
 
         formatTime: function (oTime) {
             if (!oTime) return "";
+        
+            // Handle object with milliseconds
             if (typeof oTime === "object" && oTime.ms !== undefined) {
-                const totalSeconds = oTime.ms / 1000;
-                const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
-                const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
-                const seconds = String(Math.floor(totalSeconds % 60)).padStart(2, '0');
-                return `${hours}:${minutes}:${seconds}`;
+                const date = new Date(oTime.ms);
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                return `${hours}:${minutes}`;
             }
-
+        
+            // Handle ISO 8601 duration string like "PT09H00M00S"
             if (typeof oTime === "string") {
-                const match = oTime.match(/PT(\d{2})H(\d{2})M(\d{2})S/);
+                const match = oTime.match(/PT(\\d{2})H(\\d{2})M/);
                 if (match) {
-                    return `${match[1]}:${match[2]}:${match[3]}`;
+                    return `${match[1]}:${match[2]}`;
                 }
             }
-
-            return String(oTime);
+        
+            // Fallback: try parsing as time string
+            try {
+                const date = new Date(`1970-01-01T${oTime}`);
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                return `${hours}:${minutes}`;
+            } catch (e) {
+                return String(oTime);
+            }
         },
+        
 
         formatStatusColor: function (sStatus) {
             if (sStatus === "Completed") {
@@ -196,30 +207,43 @@ sap.ui.define([
         },
 
         onDownload: function () {
-            const oTable = this.byId("resignationTable");
-            const aItems = oTable.getItems();
-
-            if (!aItems.length) {
-                MessageToast.show("No data available in the table.");
+            const oModel = this.getView().getModel("view");
+            const aData = oModel.getProperty("/filteredResignation");
+        
+            if (!aData || !aData.length) {
+                MessageToast.show("No data available to download.");
                 return;
             }
-
+        
             const aHeaders = [
                 "Job ID", "Date", "Resignation Entries", "Separation Postings", "Future Dated Entries",
                 "Upper Manager Updates", "Separation Start", "Separation End", "Separation Status",
                 "Upper Manager Start", "Upper Manager End", "Upper Manager Status"
             ];
-
-            const aRows = aItems.map(oItem => {
-                const aCells = oItem.getCells();
-                return aCells.map(cell => cell.getText());
-            });
-
+        
+            const formatTime = this.formatTime.bind(this);
+            const formatDate = this.formatDate.bind(this);
+        
+            const aRows = aData.map(item => [
+                item.Jobid,
+                formatDate(item.Date),
+                item.resignationEntries,
+                item.seperationPostings,
+                item.futureDatedEntries,
+                item.upperManagerUpdates,
+                formatTime(item.seperationJobStartTime),
+                formatTime(item.seperationJobEndTime),
+                item.ueperationJobStatus,
+                formatTime(item.upperManagerJobStartTime),
+                formatTime(item.upperManagerJobEndTime),
+                item.upperManagerJobStatus
+            ]);
+        
             let sCsvContent = aHeaders.join(",") + "\n";
             aRows.forEach(row => {
                 sCsvContent += row.join(",") + "\n";
             });
-
+        
             const blob = new Blob([sCsvContent], { type: "text/csv;charset=utf-8;" });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
@@ -229,5 +253,6 @@ sap.ui.define([
             link.click();
             document.body.removeChild(link);
         }
+        
     });
 });
