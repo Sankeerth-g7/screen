@@ -1,29 +1,72 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/ui/model/odata/v2/ODataModel",
+    "sap/ui/model/json/JSONModel",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
-    "sap/m/MessageToast",
-    "sap/ui/model/Filter",
-    "sap/ui/model/FilterOperator"
-], function (Controller, ODataModel,Filter, FilterOperator, MessageToast) {
+    "sap/m/MessageToast"
+], function (Controller, ODataModel, JSONModel, Filter, FilterOperator, MessageToast) {
     "use strict";
 
     return Controller.extend("project1.controller.View1", {
         onInit: function () {
             const oODataModel = new ODataModel("/odata/v2/my/");
             this.getView().setModel(oODataModel, "odata");
-            const oJSONModel = new sap.ui.model.json.JSONModel({ resignation: [], filteredResignation: [] });
-            this.getView().setModel(oJSONModel, "view"); // Set as named model 'view'
+
+            const oJSONModel = new JSONModel({
+                resignation: [],
+                filteredResignation: [],
+                paginatedResignation: [],
+                currentPage: 1,
+                pageSize: 10
+            });
+            this.getView().setModel(oJSONModel, "view");
+
             oODataModel.read("/resignation", {
                 success: (oData) => {
                     oJSONModel.setProperty("/resignation", oData.results);
                     oJSONModel.setProperty("/filteredResignation", oData.results);
+                    this.updatePagination();
                 },
                 error: (err) => {
                     console.error("Failed to load resignation data", err);
                 }
             });
+        },
+
+        updatePagination: function () {
+            const oModel = this.getView().getModel("view");
+            const allData = oModel.getProperty("/filteredResignation");
+            const pageSize = oModel.getProperty("/pageSize");
+            const currentPage = oModel.getProperty("/currentPage");
+
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageData = allData.slice(start, end);
+
+            oModel.setProperty("/paginatedResignation", pageData);
+        },
+
+        onNextPage: function () {
+            const oModel = this.getView().getModel("view");
+            const total = oModel.getProperty("/filteredResignation").length;
+            const pageSize = oModel.getProperty("/pageSize");
+            let currentPage = oModel.getProperty("/currentPage");
+
+            if ((currentPage * pageSize) < total) {
+                oModel.setProperty("/currentPage", ++currentPage);
+                this.updatePagination();
+            }
+        },
+
+        onPreviousPage: function () {
+            const oModel = this.getView().getModel("view");
+            let currentPage = oModel.getProperty("/currentPage");
+
+            if (currentPage > 1) {
+                oModel.setProperty("/currentPage", --currentPage);
+                this.updatePagination();
+            }
         },
 
         onDateFilterChange: function () {
@@ -32,7 +75,7 @@ sap.ui.define([
             if (endDate) {
                 endDate.setHours(23, 59, 59, 999);
             }
-        
+
             const oJSONModel = this.getView().getModel("view");
             const aAllData = oJSONModel.getProperty("/resignation") || [];
             const aFilteredData = aAllData.filter(item => {
@@ -50,27 +93,22 @@ sap.ui.define([
                 if (endDate && itemDate > endDate) return false;
                 return true;
             });
-        
+
             oJSONModel.setProperty("/filteredResignation", aFilteredData);
-            var oTable = this.byId("resignationTable");
-            if (oTable && oTable.getBinding("items")) {
-                oTable.getBinding("items").refresh(true);
-            }
+            oJSONModel.setProperty("/currentPage", 1);
+            this.updatePagination();
         },
- 
+
         onClearFilters: function () {
             this.byId("startDatePicker").setDateValue(null);
             this.byId("endDatePicker").setDateValue(null);
             const oJSONModel = this.getView().getModel("view");
             const aAllData = oJSONModel.getProperty("/resignation") || [];
             oJSONModel.setProperty("/filteredResignation", aAllData);
-            var oTable = this.byId("resignationTable");
-            if (oTable && oTable.getBinding("items")) {
-                oTable.getBinding("items").refresh(true);
-            }
+            oJSONModel.setProperty("/currentPage", 1);
+            this.updatePagination();
         },
- 
- 
+
         formatTime: function (oTime) {
             if (!oTime) return "";
             if (typeof oTime === "object" && oTime.ms !== undefined) {
@@ -80,26 +118,26 @@ sap.ui.define([
                 const seconds = String(Math.floor(totalSeconds % 60)).padStart(2, '0');
                 return `${hours}:${minutes}:${seconds}`;
             }
-        
-            // If it's a string like "PT09H00M00S"
+
             if (typeof oTime === "string") {
                 const match = oTime.match(/PT(\d{2})H(\d{2})M(\d{2})S/);
                 if (match) {
                     return `${match[1]}:${match[2]}:${match[3]}`;
                 }
             }
-        
+
             return String(oTime);
         },
 
         formatStatusColor: function (sStatus) {
             if (sStatus === "Completed") {
-                return "Success"; // green
+                return "Success";
             } else if (sStatus === "Skipped") {
-                return "Error"; // red
+                return "Error";
             }
             return "None";
         },
+
         formatDate: function (oDate) {
             if (!oDate) return "";
             let dateObj;
@@ -113,7 +151,7 @@ sap.ui.define([
             }
             const day = String(dateObj.getDate()).padStart(2, '0');
             const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             const month = monthNames[dateObj.getMonth()];
             const year = String(dateObj.getFullYear()).slice(-2);
             return `${day}-${month}-${year}`;
@@ -155,4 +193,3 @@ sap.ui.define([
         }
     });
 });
-

@@ -29,7 +29,7 @@
 
             
             <VBox class="table-box">
-                <Table id="resignationTable" items="{view>/filteredResignation}" inset="false" growing="true" growingScrollToLoad="true">
+                <Table id="resignationTable" items="{view>/paginatedResignation}" inset="false" growing="true" growingScrollToLoad="true">
                     <columns>
                         <Column><Text text="Job ID" class="column-header" /></Column>
                         <Column><Text text="Date" class="column-header" /></Column>
@@ -64,6 +64,12 @@
                     </items>
                 </Table>
             </VBox>
+            <HBox justifyContent="Center" class="pagination-bar">
+    <Button text="Previous" press="onPreviousPage" />
+    <Text text="{view>/currentPage}" />
+    <Button text="Next" press="onNextPage" />
+</HBox>
+
 
         </layout:VerticalLayout>
     </Page>
